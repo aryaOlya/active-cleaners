@@ -29,11 +29,16 @@ const EmailItem = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const emailData = await getEmail(
+      const {emailData,emailResponse} = await getEmail(
         typeof emailId !== "undefined" ? emailId : 0
       );
-      setEmail(emailData);
 
+      if (emailResponse.status === 404) {
+        return navigate("*");
+      }
+
+
+      setEmail(emailData);
       setEmail(emailData);
 
       const { userId, topicId } = emailData;

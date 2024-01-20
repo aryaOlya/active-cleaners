@@ -23,7 +23,7 @@ export const getEmails = async (
 export const getEmail = async (emailId: number) => {
   const emailResponse = await fetch(`http://localhost:4000/emails/${emailId}`);
   const emailData = await emailResponse.json()
-  return emailData
+  return {emailData,emailResponse}
 };
 
 export const deleteEmail = async (emailId:number) => {

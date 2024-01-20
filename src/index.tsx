@@ -14,6 +14,7 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
+import NotFound from "./components/errors/NotFound";
 
 
 const router = createBrowserRouter(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
       <Route path="/email/:id" element={<EmailItem/>} />
       <Route path="/send-email" element={<ComposeEmail/>} />
       <Route path="/outbox" element={<OutBox/>} />
+      <Route path="*" element={<NotFound/>} />
     </Route>
   )
 )
