@@ -8,11 +8,17 @@ also implemented json-server to create endpoint to delete or send email
 
 ### start project
 
-`git clone https://github.com/aryaOlya/active-cleaners`
+````
+git clone https://github.com/aryaOlya/active-cleaners
+````
 
-`npm install`
+````
+npm install
+````
 
-`npm start`
+````
+npm start
+````
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
