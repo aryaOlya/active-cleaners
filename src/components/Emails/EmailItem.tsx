@@ -4,6 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { EmailType, UserType, TopicType } from "../../types/types";
 import FormLayout from "../../layouts/FormLayout";
 import { Box, Button } from "@mui/material";
+import { getForeignKey } from "../../api/foreignKies";
+import { getEmail, deleteEmail } from "../../api/emails";
+import Loading from "../Loading";
 
 const EmailItem = () => {
   const navigate = useNavigate();
@@ -14,55 +17,41 @@ const EmailItem = () => {
   const [user, setUser] = useState<UserType | null>(null);
   const [topic, setTopic] = useState<TopicType | null>(null);
 
-  const deleteEmail = async () => {
-    try {
-      const response = await fetch(`http://localhost:4000/emails/${emailId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+  const handleDeleteEmail = async () => {
+    const response = await deleteEmail(
+      typeof emailId !== "undefined" ? emailId : 0
+    );
 
-      if (response.status === 200) {
-        return navigate("/");
-      }
-    } catch (error) {
-      console.log(`deleting email error ${error}`);
+    if (response.status === 200) {
+      return navigate("/");
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const emailResponse = await fetch(
-          `http://localhost:4000/emails/${emailId}`
-        ).then((res) => res.json());
+      const emailData = await getEmail(
+        typeof emailId !== "undefined" ? emailId : 0
+      );
+      setEmail(emailData);
 
-        setEmail(emailResponse);
+      setEmail(emailData);
 
-        const { userId, topicId } = emailResponse;
+      const { userId, topicId } = emailData;
 
-        const [userResponse, topicResponse] = await Promise.all([
-          fetch(`http://localhost:4000/users/${userId}`).then((res) =>
-            res.json()
-          ),
-          fetch(`http://localhost:4000/topics/${topicId}`).then((res) =>
-            res.json()
-          ),
-        ]);
+      const { userResponse, topicResponse } = await getForeignKey(
+        userId,
+        topicId
+      );
 
-        setUser(userResponse);
-        setTopic(topicResponse);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      setUser(userResponse);
+      setTopic(topicResponse);
     };
 
     fetchData();
   }, [emailId]);
 
   if (!email || !user || !topic) {
-    return <h1>Loading...</h1>;
+    return <Loading/> ;
   }
 
   return (
@@ -70,7 +59,8 @@ const EmailItem = () => {
       <FormLayout title={email.title}>
         <div className="flex justify-between mb-10">
           <div>
-            <strong>{email.status === 'sent' ? 'To' : 'From'}:</strong> {user.name}
+            <strong>{email.status === "sent" ? "To" : "From"}:</strong>{" "}
+            {user.name}
           </div>
           <div>
             <strong>Topic:</strong> {topic.name}
@@ -80,9 +70,7 @@ const EmailItem = () => {
           </div>
         </div>
 
-        <p>
-          {email.body}
-        </p>
+        <p>{email.body}</p>
 
         <Box
           position="absolute"
@@ -91,7 +79,7 @@ const EmailItem = () => {
           right={0}
           textAlign="center"
         >
-          <Button onClick={deleteEmail} variant="contained" color="error">
+          <Button onClick={handleDeleteEmail} variant="contained" color="error">
             delete
           </Button>
         </Box>

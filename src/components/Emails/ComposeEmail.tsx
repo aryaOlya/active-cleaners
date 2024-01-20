@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FormLayout from "../../layouts/FormLayout";
 import { UserType, TopicType } from "../../types/types";
+import Loading from "../Loading";
 import {
   TextField,
   Box,
@@ -12,6 +13,8 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import { idGenerator, setUserName, timeGenerator } from "../../utils/utils";
 import { useNavigate } from "react-router-dom";
+import { getForeignKies,createUser } from "../../api/foreignKies";
+import { createEmail } from "../../api/emails";
 
 function ComposeEmail() {
   const [users, setUsers] = useState<UserType[]>([]);
@@ -24,38 +27,33 @@ function ComposeEmail() {
 
   const handleSubmit = async () => {
     const filteredUser = users.filter((user) => user.email === sendTo);
-    const userId =filteredUser.length === 0 ? idGenerator() : filteredUser[0].id;
-    const userName = setUserName(sendTo)
+    console.log(`dfggrrrrr43${filteredUser[0].id}`)
+    const userId =
+      filteredUser.length === 0 ? idGenerator() : filteredUser[0].id;
+    const userName = setUserName(sendTo);
 
+    
+      const userResponse = await createUser({ id: userId, name: userName, email: sendTo })
 
-    try {
-      const userResponse = await fetch("http://localhost:4000/users", {
-        method: "POST",
-        headers: { Accept: "Application/json","Content-Type":'application/json' },
-        body:JSON.stringify({id:userId,name:userName,email:sendTo})
-      });
+      
 
-      if (userResponse.status !== 201) {
-        throw new Error("error during creating user")
-      }
+      const emailId = idGenerator();
+      const date = timeGenerator();
 
-      const emailId = idGenerator()
-      const date = timeGenerator()
-
-      const emailResponse = await fetch("http://localhost:4000/emails",{
-        method: "POST",
-        headers: { Accept: "Application/json"   ,"Content-Type":'application/json'},
-        body:JSON.stringify({id:emailId,title:title,body:body,topicId:topic,userId:userId,status:"sent",date:date})
+      const emailResponse = await createEmail({
+        id: emailId,
+        title: title,
+        body: body,
+        topicId: topic,
+        userId: userId,
+        status: "sent",
+        date: date,
       })
 
       if (emailResponse.status === 201) {
-        return navigate("/emails")
+        return navigate("/outbox");
       }
-
-
-    } catch (error) {
-      console.log(`error during send email...`);
-    }
+    
   };
 
   const handleTitle = (event: any) => {
@@ -72,27 +70,18 @@ function ComposeEmail() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [usersResponse, topicsResponse] = await Promise.all([
-          fetch("http://localhost:4000/users"),
-          fetch("http://localhost:4000/topics"),
-        ]);
+      const { usersData, topicsData } = await getForeignKies();
 
-        const [usersData, topicsData] = await Promise.all([
-          usersResponse.json(),
-          topicsResponse.json(),
-        ]);
-
-        setUsers(usersData);
-        setTopics(topicsData);
-      } catch (error) {
-        console.error("Error fetching users and topics", error);
-      }
+      setUsers(usersData);
+      setTopics(topicsData);
     };
 
     fetchData();
   }, []);
 
+  if (users.length === 0 || topics.length ===0) {
+    return <Loading/>
+  }
 
   return (
     <>
