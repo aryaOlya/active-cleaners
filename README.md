@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+# simple email client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## description
 
-## Available Scripts
+simple email client using react and typescript to implement ui.\
+to show sent and received email or delete or send emails
+also implemented json-server to create endpoint to delete or send email
 
-In the project directory, you can run:
+### start project
 
-### `npm start`
+`git clone https://github.com/aryaOlya/active-cleaners`
+
+`npm install`
+
+`npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### use json-server
 
-### `npm test`
+there is a mock api using json server in mock/db.json
+the project call [http://localhost:4000](http://localhost:3000) to access json-server
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+`GET  http://localhost:4000/emails`
+\
+`GET  http://localhost:4000/users`
+\
+`GET  http://localhost:4000/topics`
 
-### `npm run build`
+`GET  http://localhost:4000/topics/:id`
+\
+`GET  http://localhost:4000/topics/:id`
+\
+`GET  http://localhost:4000/topics/:id`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`DELETE  http://localhost:4000/emails/:id`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`POST  http://localhost:4000/emails`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
