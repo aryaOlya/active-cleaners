@@ -11,6 +11,9 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { getForeignKies } from "../../api/foreignKies";
+import { getEmails } from "../../api/emails";
+import Loading from "../Loading";
 
 const EmailList = () => {
   const [users, setUsers] = useState<UserType[]>([]);
@@ -21,25 +24,14 @@ const EmailList = () => {
 
   const [userFilter, setUserFilter] = useState<number>(0);
   const [topicFilter, setTopicFilter] = useState<number>(0);
+  
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [usersResponse, topicsResponse] = await Promise.all([
-          fetch("http://localhost:4000/users"),
-          fetch("http://localhost:4000/topics"),
-        ]);
+      const { usersData, topicsData } = await getForeignKies();
 
-        const [usersData, topicsData] = await Promise.all([
-          usersResponse.json(),
-          topicsResponse.json(),
-        ]);
-
-        setUsers(usersData);
-        setTopics(topicsData);
-      } catch (error) {
-        console.error("Error fetching users and topics", error);
-      }
+      setUsers(usersData);
+      setTopics(topicsData);
     };
 
     fetchData();
@@ -47,25 +39,27 @@ const EmailList = () => {
 
   useEffect(() => {
     const fetchEmails = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/emails?status=sent${
-            userFilter === 0 ? "" : `&userId=${userFilter}`
-          }${
-            topicFilter === 0 ? "" : `&topicId=${topicFilter}`
-          }&_page=${currentPage}`
-        );
-        const emailData = await response.json();
+      const { response, emailData } = await getEmails(
+        userFilter,
+        topicFilter,
+        currentPage,
+        "sent"
+      );
 
-        setEmails(emailData);
-        setTotalPages(Math.ceil(emailData.length / 10));
-      } catch (error) {
-        console.error("Error fetching emails", error);
-      }
+      setEmails(emailData);
+      setTotalPages(
+        Math.ceil(
+          parseInt(response.headers.get("X-Total-Count") ?? "0", 10) / 10
+        )
+      );
     };
 
     fetchEmails();
-  }, [currentPage,topicFilter,userFilter]);
+  }, [currentPage, topicFilter, userFilter]);
+
+  if (users.length === 0 || topics.length ===0) {
+    return <Loading/>
+  }
 
   return (
     <>
